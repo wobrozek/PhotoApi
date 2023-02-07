@@ -41,21 +41,30 @@ class PDF(FPDF):
             y+=84/width*height+5
         return y
 
-    def baner(self,text,x,y,marginX,marginY):
-        with self.rotation(270,marginX,marginY):
-            # self.set_y(y)
-            self.cell(x,22,text,1)
+    def baner(self,text,x,y,marginX):
+        with self.rotation(270,105,105):
+            self.set_xy(0,marginX)
+            self.cell(x,22,text,align="c")
+
+    def setBackground(self,color):
+        img = Image.new('RGB', (210, 297), "#afeafe")
+        img.save('blue_colored.png')
+
+        # adding image to pdf page that e created using fpdf
+        self.image('blue_colored.png', x=0, y=0, w=210, h=297, type='', link='')
 
 
 def generatePDF():
     idFolderu="3505c8ab-a6fa-11ed-8eb7-b655614b3591"
+    text = "Bal wydzialowy MS"
     pdf=PDF()
     pdf.add_page()
+    pdf.fill_color="#000"
     pdf.set_font("helvetica","",40)
-    y=pdf.photosColumn(idFolderu,0)
-    pdf.baner("siema", y, 84,46,70)
+    y=pdf.photosColumn(idFolderu,0)-5
+    pdf.baner(text, y, 84,104)
     pdf.photosColumn(idFolderu, 105)
-    pdf.baner("elo", y, 185,220,-5)
+    pdf.baner(text, y, 185,0)
     pdf.output(f"userPhotos/{idFolderu}/photos.pdf")
 
 # function to create mocks
