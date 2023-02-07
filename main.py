@@ -11,23 +11,27 @@ from PIL import Image,ImageColor
 class dataPDF(BaseModel):
     images:List[str]
     banerName:str
-    banerbgColor: str
+    banerBgColor: str
     banerFontColor: str
 
 app=FastAPI()
 
-@app.get("/pdf/{serieID}")
-def downloadPdf():
-    return {"name":"first data"}
+@app.get("/pdf/{id}")
+def downloadPdf(id:str):
+    with open(f"userPhotos/{id}/photos.pdf", "rb") as pdf_file:
+        encodedBase64= base64.b64encode(pdf_file.read())
+        return {"pdf":encodedBase64}
+    return {"error":"wrongId"}
 
-@app.post("/images")
+@app.post("/pdf")
 def createPdf(data:dataPDF):
     idFolder=uuid.uuid1()
-    os.mkdir(str(idFolder))
+    os.mkdir(f"userPhotos/{str(idFolder)}")
     for id,img in enumerate(data.images):
         with open(f"userPhotos/{idFolder}/img{id}.jpg", "wb") as image_file:
             image_file.write(base64.b64decode((img)))
 
+    generatePDF(idFolder,data.banerName,data.banerBgColor,data.banerFontColor)
     return str(idFolder)
 
 
@@ -47,25 +51,20 @@ class PDF(FPDF):
             self.set_xy(0,marginX)
             self.cell(x,22,text,align="c")
 
-    def setBackground(self,bgColor):
+    def setBackground(self,bgColor,idFolderu):
         img = Image.new('RGB', (210, 297),bgColor )
-        img.save('bg_bgColor.png')
+        img.save(f"userPhotos/{idFolderu}/bg_bgColor.png")
 
         # adding image to pdf page that e created using fpdf
-        self.image('bg_bgColor.png', x=0, y=0, w=210, h=297, type='', link='')
+        self.image(f"userPhotos/{idFolderu}/bg_bgColor.png", x=0, y=0, w=210, h=297, type='', link='')
 
 
-def generatePDF():
-    idFolderu="3505c8ab-a6fa-11ed-8eb7-b655614b3591"
-    text = "Bal wydzialowy MS"
-    bgColor="#afeafe"
-    fontColor="#fff"
-    
+def generatePDF(idFolderu,text,bgColor,fontColor):
+
     fontRGB=ImageColor.getcolor(fontColor,"RGB")
-
     pdf=PDF()
     pdf.add_page()
-    pdf.setBackground(bgColor)
+    pdf.setBackground(bgColor,idFolderu)
     pdf.set_text_color(fontRGB[0],fontRGB[1],fontRGB[2])
     pdf.set_font("helvetica","",40)
     y=pdf.photosColumn(idFolderu,0)-5
@@ -73,13 +72,3 @@ def generatePDF():
     pdf.photosColumn(idFolderu, 105)
     pdf.baner(text, y, 185,0)
     pdf.output(f"userPhotos/{idFolderu}/photos.pdf")
-
-# function to create mocks
-@app.get("/imgToBase64")
-def photoToBase64():
-    images =glob.glob("C:/Users/wobro/Desktop/mock/*")
-    for id,img in enumerate(images):
-        with open(img, "rb") as image_file:
-            images[id] = base64.b64encode(image_file.read())
-
-    return images
