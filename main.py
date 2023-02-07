@@ -5,6 +5,7 @@ import base64
 import glob
 import os
 from pydantic import BaseModel
+from fpdf import FPDF
 
 class dataPDF(BaseModel):
     images:List[str]
@@ -27,6 +28,20 @@ def createPdf(data:dataPDF):
 
     return str(idFolder)
 
+
+class PDF(FPDF):
+    def photo(self,id,idFolder,x_,y_):
+        self.image(f"userPhotos/{idFolder}/img{id}.jpg",x=x_ ,y=y_,w=30)
+
+def generatePDF():
+    idFolderu="3505c8ab-a6fa-11ed-8eb7-b655614b3591"
+    pdf=PDF()
+    pdf.add_page()
+    pdf.photo(0,idFolderu,0,0)
+    pdf.photo(1, idFolderu, 0, 30)
+    pdf.output(f"userPhotos/{idFolderu}/photos.pdf")
+
+# function to create mocks
 @app.get("/imgToBase64")
 def photoToBase64():
     images =glob.glob("C:/Users/wobro/Desktop/mock/*")
