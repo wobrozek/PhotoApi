@@ -6,6 +6,7 @@ import glob
 import os
 from pydantic import BaseModel
 from fpdf import FPDF
+from PIL import Image
 
 class dataPDF(BaseModel):
     images:List[str]
@@ -30,15 +31,31 @@ def createPdf(data:dataPDF):
 
 
 class PDF(FPDF):
-    def photo(self,id,idFolder,x_,y_):
-        self.image(f"userPhotos/{idFolder}/img{id}.jpg",x=x_ ,y=y_,w=30)
+    def photosColumn(self,idFolder,x):
+        images = glob.glob(f"userPhotos/{idFolder}/*.jpg")
+        y=0
+
+        for img in images:
+            width,height=Image.open(img).size
+            self.image(img, x=x, y=y, w=84)
+            y+=84/width*height+5
+        return y
+
+    def baner(self,text,x,y,marginX,marginY):
+        with self.rotation(270,marginX,marginY):
+            # self.set_y(y)
+            self.cell(x,22,text,1)
+
 
 def generatePDF():
     idFolderu="3505c8ab-a6fa-11ed-8eb7-b655614b3591"
     pdf=PDF()
     pdf.add_page()
-    pdf.photo(0,idFolderu,0,0)
-    pdf.photo(1, idFolderu, 0, 30)
+    pdf.set_font("helvetica","",40)
+    y=pdf.photosColumn(idFolderu,0)
+    pdf.baner("siema", y, 84,46,70)
+    pdf.photosColumn(idFolderu, 105)
+    pdf.baner("elo", y, 185,220,-5)
     pdf.output(f"userPhotos/{idFolderu}/photos.pdf")
 
 # function to create mocks
