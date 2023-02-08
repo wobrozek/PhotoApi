@@ -1,4 +1,6 @@
+from io import BytesIO
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from typing import List
 import uuid
 import base64
@@ -16,12 +18,16 @@ class dataPDF(BaseModel):
 
 app=FastAPI()
 
+# @app.get("/pdf/{id}")
+# def downloadPdf(id:str):
+#     with open(f"userPhotos/{id}/photos.pdf", "rb") as pdf_file:
+#         encodedBase64= base64.b64encode(pdf_file.read())
+#         return {"pdf":encodedBase64}
+#     return {"error":"wrongId"}
+
 @app.get("/pdf/{id}")
-def downloadPdf(id:str):
-    with open(f"userPhotos/{id}/photos.pdf", "rb") as pdf_file:
-        encodedBase64= base64.b64encode(pdf_file.read())
-        return {"pdf":encodedBase64}
-    return {"error":"wrongId"}
+async def get_pdf(id: str):
+    return FileResponse(f"userPhotos/{id}/photos.pdf")
 
 @app.post("/pdf")
 def createPdf(data:dataPDF):
