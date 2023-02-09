@@ -27,14 +27,14 @@ app=FastAPI()
 
 @app.get("/pdf/{id}")
 async def get_pdf(id: str):
-    return FileResponse(f"userPhotos/{id}/photos.pdf")
+    return FileResponse(f"src/userPhotos/{id}/photos.pdf")
 
 @app.post("/pdf")
 def createPdf(data:dataPDF):
     idFolder=uuid.uuid1()
-    os.mkdir(f"userPhotos/{str(idFolder)}")
+    os.mkdir(f"src/userPhotos/{str(idFolder)}")
     for id,img in enumerate(data.images):
-        with open(f"userPhotos/{idFolder}/img{id}.jpg", "wb") as image_file:
+        with open(f"src/userPhotos/{idFolder}/img{id}.jpg", "wb") as image_file:
             image_file.write(base64.b64decode((img)))
 
     generatePDF(idFolder,data.banerName,data.banerBgColor,data.banerFontColor)
@@ -43,7 +43,7 @@ def createPdf(data:dataPDF):
 
 class PDF(FPDF):
     def photosColumn(self,idFolder,x):
-        images = glob.glob(f"userPhotos/{idFolder}/*.jpg")
+        images = glob.glob(f"src/userPhotos/{idFolder}/*.jpg")
         y=0
 
         for img in images:
