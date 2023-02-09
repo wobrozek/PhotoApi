@@ -1,6 +1,6 @@
 FROM python:3.8-slim-buster
 # Image from dockerhub
-
+ARG PORT
 ENV PYTHONUNBUFFERED 1
 EXPOSE 8000
 # Expose the port 8000 in which our application runs
@@ -13,4 +13,4 @@ COPY ./src .
 RUN pip install -r requirements.txt
 # Install the dependencies
 # Run the application in the port 8000
-CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8000", "main:app"]
+CMD ["uvicorn", "--host", "0.0.0.0", "--port", ${port}, "main:app"]
