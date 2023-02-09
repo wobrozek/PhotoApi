@@ -1,4 +1,5 @@
-FROM python:3.8.1-slim # Image from dockerhub
+FROM python:3.8-slim-buster
+# Image from dockerhub
 
 ENV PYTHONUNBUFFERED 1
 EXPOSE 8000 # Expose the port 8000 in which our application runs
