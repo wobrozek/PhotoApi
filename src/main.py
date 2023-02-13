@@ -1,4 +1,3 @@
-from io import BytesIO
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from typing import List
@@ -9,6 +8,7 @@ import os
 from pydantic import BaseModel
 from fpdf import FPDF
 from PIL import Image,ImageColor
+
 
 class dataPDF(BaseModel):
     images:List[str]
@@ -25,13 +25,19 @@ app=FastAPI()
 #         return {"pdf":encodedBase64}
 #     return {"error":"wrongId"}
 
+@app.on_event("startup")
+async def startup_event():
+    logger = logging.getLogger("uvicorn.access")
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+    logger.addHandler(handler)
+
 @app.get("/pdf/{id}")
 async def get_pdf(id: str):
     return FileResponse(f"userPhotos/{id}/photos.pdf")
 
 @app.post("/pdf")
-def createPdf(data:dataPDF):
-    print(data)
+async def createPdf(data:dataPDF):
     idFolder=uuid.uuid1()
     os.mkdir(f"userPhotos/{str(idFolder)}")
     for id,img in enumerate(data.images):
