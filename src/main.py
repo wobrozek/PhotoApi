@@ -31,6 +31,7 @@ async def get_pdf(id: str):
 
 @app.post("/pdf")
 def createPdf(data:dataPDF):
+    print(data)
     idFolder=uuid.uuid1()
     os.mkdir(f"userPhotos/{str(idFolder)}")
     for id,img in enumerate(data.images):
