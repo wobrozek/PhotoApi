@@ -25,12 +25,6 @@ app=FastAPI()
 #         return {"pdf":encodedBase64}
 #     return {"error":"wrongId"}
 
-@app.on_event("startup")
-async def startup_event():
-    logger = logging.getLogger("uvicorn.access")
-    handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
-    logger.addHandler(handler)
 
 @app.get("/pdf/{id}")
 async def get_pdf(id: str):
