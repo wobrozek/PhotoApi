@@ -86,6 +86,7 @@ def generatePDF(idFolderu,text,bgColor,fontColor):
     pdf.output(f"userPhotos/{idFolderu}/photos.pdf")
 
 def base64ByteArrayToImage(bits):
+    print(bits)
     decoded=binascii.a2b_base64(bits)
     print(decoded)
     bitaray=bytearray(decoded)
