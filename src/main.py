@@ -8,6 +8,8 @@ import os
 from pydantic import BaseModel
 from fpdf import FPDF
 from PIL import Image,ImageColor
+import binascii
+import struct
 
 
 class dataPDF(BaseModel):
@@ -36,7 +38,7 @@ async def createPdf(data:dataPDF):
     os.mkdir(f"userPhotos/{str(idFolder)}")
     for id,img in enumerate(data.images):
         with open(f"userPhotos/{idFolder}/img{id}.jpg", "wb") as image_file:
-            image_file.write(base64.b64decode((img)))
+            image_file.write(base64ByteArrayToImage(img))
 
     generatePDF(idFolder,data.banerName,data.banerBgColor,data.banerFontColor)
     return str(idFolder)
@@ -79,3 +81,11 @@ def generatePDF(idFolderu,text,bgColor,fontColor):
     pdf.photosColumn(idFolderu, 105)
     pdf.baner(text, y, 185,0)
     pdf.output(f"userPhotos/{idFolderu}/photos.pdf")
+
+def base64ByteArrayToImage(bits):
+    decoded=binascii.a2b_base64(bits)
+    print(decoded)
+    bitaray=bytearray(decoded)
+    print(bitaray)
+    return Image.frombytes("RGBA", (500, 500), bitaray)
+
