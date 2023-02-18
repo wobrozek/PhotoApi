@@ -46,7 +46,7 @@ async def createPdf(data:dataPDF):
 
 
     generatePDF(idFolder,data.banerName,data.banerBgColor,data.banerFontColor)
-    return str(idFolder)
+    return {"id":idFolder}
 
 
 class PDF(FPDF):
