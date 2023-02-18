@@ -37,8 +37,11 @@ async def createPdf(data:dataPDF):
     idFolder=uuid.uuid1()
     os.mkdir(f"userPhotos/{str(idFolder)}")
     for id,img in enumerate(data.images):
-        with open(f"userPhotos/{idFolder}/img{id}.jpg", "wb") as image_file:
-            image_file.write(base64ByteArrayToImage(img))
+
+        # with open(f"userPhotos/{idFolder}/img{id}.jpg", "wb") as image_file:
+        pillowImage=base64ByteArrayToImage(img)
+        pillowImage.save(f"userPhotos/{idFolder}/img{id}.jpg")
+
 
     generatePDF(idFolder,data.banerName,data.banerBgColor,data.banerFontColor)
     return str(idFolder)
