@@ -1,3 +1,5 @@
+import io
+
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from typing import List
@@ -86,10 +88,8 @@ def generatePDF(idFolderu,text,bgColor,fontColor):
     pdf.output(f"userPhotos/{idFolderu}/photos.pdf")
 
 def base64ByteArrayToImage(bits):
-    print(bits)
+
     decoded=binascii.a2b_base64(bits)
-    print(decoded)
     bitaray=bytearray(decoded)
-    print(bitaray)
-    return Image.frombytes("RGBA", (500, 500), bitaray)
+    return Image.open(io.BytesIO(bitaray))
 
